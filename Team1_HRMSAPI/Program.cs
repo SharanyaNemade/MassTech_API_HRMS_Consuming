@@ -59,13 +59,24 @@ builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("fixed", opt =>
     {
-        opt.PermitLimit = 5; // max 5 requests 
+        //opt.PermitLimit = 5; // max 5 requests 
+        opt.PermitLimit = 100; // max 100 requests 
         opt.Window = TimeSpan.FromSeconds(10); // per 10 sec
         opt.QueueLimit = 2;
     });
 });
 
 
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy.WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+});
 
 
 
@@ -79,6 +90,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngular");
 
 app.UseRateLimiter();
 
